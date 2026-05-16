@@ -15,12 +15,23 @@ export const config = {
 };
 
 export default clerkMiddleware((request) => {
-  const url = request.nextUrl || new URL(request.url); // Fallback
-  const { pathname } = url;
+  // Safely extract pathname with fallback
+  let pathname = "/";
+  
+  if (request.nextUrl) {
+    pathname = request.nextUrl.pathname;
+  } else if (request.url) {
+    try {
+      const url = new URL(request.url);
+      pathname = url.pathname;
+    } catch (e) {
+      pathname = "/";
+    }
+  }
 
   if (isPublic(pathname)) {
     return NextResponse.next();
   }
 
-  return NextResponse.redirect("/sign-in");
+  return NextResponse.redirect(new URL("/sign-in", request.url));
 });
