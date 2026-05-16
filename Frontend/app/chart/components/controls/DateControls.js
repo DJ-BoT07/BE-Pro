@@ -9,14 +9,27 @@ import {
 } from "@/components/ui/popover";
 
 export function DateControls({ selectedDate, onDateChange }) {
-  // Set default date to August 10, 2023 if no date provided
-  const defaultDate = new Date(2023, 7, 10);
+  // Set default date to January 3, 2024 (start of available data)
+  // Available data range: 2024-01-03 to 2024-10-31
+  const defaultDate = new Date(2024, 0, 3);
   const dateToUse = selectedDate || defaultDate;
+
+  // Validate date is within available range
+  const minDate = new Date(2024, 0, 3);
+  const maxDate = new Date(2024, 9, 31);
 
   const handleDateChange = (days) => {
     const newDate = new Date(dateToUse);
     newDate.setDate(newDate.getDate() + days);
-    onDateChange(newDate);
+    
+    // Constrain date to available range
+    if (newDate < minDate) {
+      onDateChange(minDate);
+    } else if (newDate > maxDate) {
+      onDateChange(maxDate);
+    } else {
+      onDateChange(newDate);
+    }
   };
 
   return (
@@ -42,9 +55,21 @@ export function DateControls({ selectedDate, onDateChange }) {
           <Calendar
             mode="single"
             selected={dateToUse}
-            onSelect={(date) => date && onDateChange(date)}
+            onSelect={(date) => {
+              if (date) {
+                // Validate date is within range
+                if (date < minDate) {
+                  onDateChange(minDate);
+                } else if (date > maxDate) {
+                  onDateChange(maxDate);
+                } else {
+                  onDateChange(date);
+                }
+              }
+            }}
             initialFocus
             defaultMonth={defaultDate}
+            disabled={(date) => date < minDate || date > maxDate}
           />
         </PopoverContent>
       </Popover>

@@ -10,6 +10,10 @@ from datetime import datetime, timedelta
 historical_data = pd.read_csv('./final_testing_data.csv')
 historical_data["datetime"] = pd.to_datetime(historical_data["datetime"])
 
+# Print available date range for debugging
+print(f"Available data range: {historical_data['datetime'].min()} to {historical_data['datetime'].max()}")
+print(f"Total data points: {len(historical_data)}")
+
 # Exclude specified columns
 excluded_columns = ['DELHI', 'BRPL', 'BYPL', 'NDPL', 'NDMC', 'MES', 'datetime']
 feature_columns = [col for col in historical_data.columns if col not in excluded_columns]
